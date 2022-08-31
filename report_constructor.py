@@ -3,6 +3,10 @@ from tkinter import filedialog
 from docx import Document
 from docx.shared import Pt, Cm
 
+'''
+дописать функции floor_pictures, add_table, construct_floor
+'''
+
 
 def select_path():
     user_path = ''
@@ -20,9 +24,8 @@ def get_pictures_list(user_path):
     return list_of_pictures
 
 
-def add_pictures_in_file(list_of_pictures, doc):
-    for picture in list_of_pictures:
-        doc.add_picture(path_with_pictures + '/' + picture, width=Pt(500))
+def add_picture_in_file(picture, doc):
+    doc.add_picture(picture + '/' + picture, width=Pt(500))
 
 
 def margin_set(doc):
@@ -46,20 +49,46 @@ def get_floor_list(pictures_list):
     return sorted(floor_list)
 
 
-path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
-report_doc = Document()
-margin_set(report_doc)
-path_with_pictures = path + '/Pictures'
-# path_with_pictures = select_path()
-all_pictures = get_pictures_list(path_with_pictures)
-all_floors = get_floor_list(all_pictures)
-add_pictures_in_file(all_pictures, report_doc)
-print(all_floors)
-# report_path = select_path()
-report_path = path
+def add_floor_title_in_file(floor, doc):
+    floor_title = doc.add_paragraph().add_run(f'{floor} этаж')
+    floor_title.font.name = 'Times new roman'
+    floor_title.font.size = Pt(16)
+    floor_title.bold = True
+    doc.add_paragraph()
 
-try:
-    report_doc.save(report_path + '/test.docx')
-    print('SUCCESS')
-except PermissionError:
-    print('Close the file pls')
+
+def floor_pictures(floor, pictures_list):
+    # если Начало совпадает с номеро этажа то добавляем
+    # возвращаем список картинок
+    return floor_list
+
+
+def construct_floor(report_doc, floor, floor_pictures_list):
+    add_floor_title_in_file(floor, report_doc)
+    add_table()
+    for picture in floor_pictures_list:
+        add_picture_in_file(picture, report_doc)
+
+
+def main_report_constructor():
+    path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
+    report_doc = Document()
+    margin_set(report_doc)
+    path_with_pictures = path + '/Pictures'
+    # path_with_pictures = select_path()
+    all_pictures = get_pictures_list(path_with_pictures)
+    all_floors = get_floor_list(all_pictures)
+    for floor in all_floors:
+        floor_pictures_list = floor_pictures(floor, all_pictures)  # получаем список картинок для конкретного этажа
+        construct_floor(report_doc, floor, floor_pictures_list)  # создаем конструкцию первого этажа
+    # report_path = select_path()
+    report_path = path
+
+    try:
+        report_doc.save(report_path + '/test.docx')
+        print('SUCCESS')
+    except PermissionError:
+        print('Close the file pls')
+
+
+main_report_constructor()

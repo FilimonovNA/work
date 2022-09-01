@@ -1,7 +1,8 @@
 import os
 from tkinter import filedialog
 from docx import Document
-from docx.shared import Pt, Cm
+from docx.shared import Pt, Cm, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
 def select_path():
@@ -47,10 +48,10 @@ def get_floor_list(pictures_list):
 
 
 def add_floor_title_in_file(floor, doc):
-    floor_title = doc.add_paragraph().add_run(f'{floor} этаж')
+    floor_title = doc.add_heading().add_run(f'{floor} этаж')
     floor_title.font.name = 'Times new roman'
     floor_title.font.size = Pt(16)
-    floor_title.bold = True
+    floor_title.font.color.rgb = RGBColor(0, 0, 0)
     doc.add_paragraph()
 
 
@@ -89,7 +90,13 @@ def app_picture_caption(picture, doc, serial_number):
     }
     picture_number_on_floor = picture[picture.find("fl")+3:picture.find("fl")+5]
     picture_caption = picture_captions.get(picture_number_on_floor)
-    floor_title = doc.add_paragraph().add_run(f'Рисунок {serial_number} - {picture_caption}')
+    paragraph = doc.add_paragraph('')
+    text = paragraph.add_run(f'Рисунок {serial_number} - {picture_caption}')
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    text.font.name = 'Times new roman'
+    text.font.size = Pt(14)
+
+
 
 
 

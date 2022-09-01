@@ -3,10 +3,6 @@ from tkinter import filedialog
 from docx import Document
 from docx.shared import Pt, Cm
 
-'''
-дописать функции floor_pictures, add_table, construct_floor
-'''
-
 
 def select_path():
     user_path = ''
@@ -25,7 +21,7 @@ def get_pictures_list(user_path):
 
 
 def add_picture_in_file(picture, doc):
-    doc.add_picture(picture + '/' + picture, width=Pt(500))
+    doc.add_picture(path_with_pictures + '/' + picture, width=Pt(500))
 
 
 def margin_set(doc):
@@ -38,6 +34,7 @@ def margin_set(doc):
 
 
 def get_floor_list(pictures_list):
+    elem = ''
     floor_list = []
     for elem in pictures_list:
         if elem[1].isdigit():
@@ -58,37 +55,73 @@ def add_floor_title_in_file(floor, doc):
 
 
 def floor_pictures(floor, pictures_list):
-    # если Начало совпадает с номеро этажа то добавляем
-    # возвращаем список картинок
-    return floor_list
+    floor_pictures_list = []
+    for elem in pictures_list:
+        if elem[1].isdigit():
+            pic_num = elem[:2]
+        else:
+            pic_num = elem[0]
+        if str(floor) == pic_num:
+            floor_pictures_list.append(elem)
+    return floor_pictures_list
 
 
-def construct_floor(report_doc, floor, floor_pictures_list):
+def add_table_with_values(doc):
+    table = doc.add_table(rows=4, cols=4)
+    table.rows[0].cells[1].text = '2G'
+    table.rows[0].cells[2].text = '3G'
+    table.rows[0].cells[3].text = '4G'
+    table.rows[1].cells[0].text = 'Средний уровень сигнала, дБм'
+    table.rows[2].cells[0].text = 'Cредняя скорость DL, Мб/c'
+    table.rows[3].cells[0].text = 'Cредняя скорость UL, Мб/c'
+    table.rows[2].cells[1].text = '-'  # DL 2G
+    table.rows[3].cells[1].text = '-'  # UL 2G
+
+
+def app_picture_caption(picture, doc, serial_number):
+    picture_captions = {
+    '01': 'Качественные показатели покрытия 2G', '02': 'Качественные показатели покрытия 3G',
+    '03': 'Качественные показатели покрытия 4G', '04': 'Скорость ППД DL/UL 3G',
+    '05': 'Скорость ППД DL/UL 4G', '06': 'Функциональные показатели CSFB',
+    '07': 'Функциональные показатели LTE Carrier Aggregation',
+    '08': 'Функциональные показатели LTE MIMO', '09': 'Функциональные показатели 2G indoor',
+    '10': 'Функциональные показатели 3G indoor', '11': 'Функциональные показатели LTE indoor'
+    }
+    picture_number_on_floor = picture[picture.find("fl")+3:picture.find("fl")+5]
+    picture_caption = picture_captions.get(picture_number_on_floor)
+    floor_title = doc.add_paragraph().add_run(f'Рисунок {serial_number} - {picture_caption}')
+
+
+
+def construct_floor(report_doc, floor, floor_pictures_list, absolut_picture_number_in_file):
     add_floor_title_in_file(floor, report_doc)
-    add_table()
+    add_table_with_values(report_doc)
     for picture in floor_pictures_list:
         add_picture_in_file(picture, report_doc)
+        app_picture_caption(picture, report_doc, absolut_picture_number_in_file)
+        absolut_picture_number_in_file += 1
+    report_doc.add_page_break()
+    return absolut_picture_number_in_file
 
 
-def main_report_constructor():
-    path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
-    report_doc = Document()
-    margin_set(report_doc)
-    path_with_pictures = path + '/Pictures'
-    # path_with_pictures = select_path()
-    all_pictures = get_pictures_list(path_with_pictures)
-    all_floors = get_floor_list(all_pictures)
-    for floor in all_floors:
-        floor_pictures_list = floor_pictures(floor, all_pictures)  # получаем список картинок для конкретного этажа
-        construct_floor(report_doc, floor, floor_pictures_list)  # создаем конструкцию первого этажа
-    # report_path = select_path()
-    report_path = path
-
-    try:
-        report_doc.save(report_path + '/test.docx')
-        print('SUCCESS')
-    except PermissionError:
-        print('Close the file pls')
+path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
+report_doc = Document()
+margin_set(report_doc)
+path_with_pictures = path + '/Pictures'
+# path_with_pictures = select_path()
+all_pictures = get_pictures_list(path_with_pictures)
+all_floors = get_floor_list(all_pictures)
 
 
-main_report_constructor()
+absolut_picture_number_in_file = 1
+for floor in all_floors:
+    floor_pictures_list = floor_pictures(floor, all_pictures)  # получаем список картинок для конкретного этажа
+    absolut_picture_number_in_file = construct_floor(report_doc, floor, floor_pictures_list, absolut_picture_number_in_file)  # создаем конструкцию первого этажа
+# report_path = select_path()
+report_path = path
+
+try:
+    report_doc.save(report_path + '/test.docx')
+    print('SUCCESS')
+except PermissionError:
+    print('Close the file pls')

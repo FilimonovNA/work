@@ -23,8 +23,8 @@ def save_report(_doc, _path):
 
 
 # На основании полученного на вход пути возвращает список строк содержащих названия картинок в папке
-def get_pictures_list(user_path):
-    all_files = os.listdir(user_path)
+def get_pictures_list(_path):
+    all_files = os.listdir(_path)
     list_of_pictures = []
     for file in all_files:
         if file[-4:] == '.jpg' or file[-4:] == '.png':
@@ -33,11 +33,11 @@ def get_pictures_list(user_path):
 
 
 # Добавляет 1 картинку файл
-def add_picture_in_file(picture, doc):
+def add_picture_in_file(_path, doc, picture):
     paragraph = doc.add_paragraph()
     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     run = paragraph.add_run("")
-    run.add_picture(path_with_pictures + '/' + picture, width=Pt(480))
+    run.add_picture(_path + '/' + picture, width=Pt(480))
 
 
 # Настройка полей для документа, можно добавить доп настройки: размер документа, ориентация и т.д.
@@ -76,8 +76,8 @@ def get_floor_list(pictures_list):
 
 
 # Добавляет заголовок этажа и форматирует его
-def add_floor_title_in_file(current_floor, doc):
-    floor_title = doc.add_heading().add_run(f'{current_floor} этаж')
+def add_floor_title_in_file(floor, doc):
+    floor_title = doc.add_heading().add_run(f'{floor} этаж')
     floor_title.font.name = 'Times new roman'
     floor_title.font.size = Pt(16)
     floor_title.font.color.rgb = RGBColor(0, 0, 0)
@@ -85,11 +85,11 @@ def add_floor_title_in_file(current_floor, doc):
 
 
 # Возвращает список картинок для конкретного этажа
-def get_list_of_floor_pictures(current_floor, _all_pictures):
+def get_list_of_floor_pictures(floor, _all_pictures):
     pictures_list = []
     for elem in _all_pictures:
         pic_num = get_picture_number_of_floor(elem)
-        if str(current_floor) == pic_num:
+        if str(floor) == pic_num:
             pictures_list.append(elem)
     return pictures_list
 
@@ -161,40 +161,46 @@ def add_scanner_title(doc):
 
 
 # Полная "Сборка" 1 этажа для отчета
-def add_floor_in_report(doc, current_floor, current_floor_pictures_list, picture_number_in_file):
-    add_floor_title_in_file(current_floor, doc)
+def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_in_file):
+    add_floor_title_in_file(floor, doc)
     add_table_with_values(doc)
     is_scanner_title_was_add = 0
-    for picture in current_floor_pictures_list:
+    for picture in floor_pictures_list:
         script_number = get_script_number_of_picture(picture)
         if script_number in ['09', '10', '11'] and is_scanner_title_was_add == 0:
             add_scanner_title(doc)
             is_scanner_title_was_add = 1
-        add_picture_in_file(picture, doc)
+        add_picture_in_file(_path, doc, picture)
         add_picture_caption(picture, doc, picture_number_in_file)
         picture_number_in_file += 1
     doc.add_page_break()
     return picture_number_in_file
 
 
-'''Аля main, в котором происходит сборка всего отчета и вызов функций'''
-path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
-report_doc = Document()
-set_margin(report_doc)
-path_with_pictures = path + '/Pictures'
-# path_with_pictures = select_path()
-all_pictures = get_pictures_list(path_with_pictures)
-all_floors = get_floor_list(all_pictures)
-# report_path = select_path()
-report_path = path
+# Main, в котором происходит сборка всего отчета и вызов функций
+def main():
+    path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
+    report_doc = Document()
+    set_margin(report_doc)
+    path_with_pictures = path + '/Pictures'
+    # path_with_pictures = select_path()
+    all_pictures = get_pictures_list(path_with_pictures)
+    all_floors = get_floor_list(all_pictures)
+    # report_path = select_path()
+    report_path = path
 
-if save_report(report_doc, report_path) != 1:
-    absolut_picture_number_in_file = 1
-    for floor in all_floors:
-        floor_pictures_list = get_list_of_floor_pictures(floor, all_pictures)
-        absolut_picture_number_in_file = add_floor_in_report(report_doc, floor, floor_pictures_list,
-                                                             absolut_picture_number_in_file)
-    save_report(report_doc, report_path)
-    print("SUCCESS")
-else:
-    print("CLOSE FILE")
+    if save_report(report_doc, report_path) != 1:
+        absolut_picture_number_in_file = 1
+        for current_floor in all_floors:
+            current_floor_pictures_list = get_list_of_floor_pictures(current_floor, all_pictures)
+            absolut_picture_number_in_file = add_floor_in_report(path_with_pictures, report_doc, current_floor,
+                                                                 current_floor_pictures_list,
+                                                                 absolut_picture_number_in_file)
+        save_report(report_doc, report_path)
+        print("SUCCESS")
+    else:
+        print("CLOSE FILE")
+
+
+# Точка входа в программу
+main()

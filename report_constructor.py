@@ -32,14 +32,6 @@ def get_pictures_list(_path):
     return list_of_pictures
 
 
-# Добавляет 1 картинку файл
-def add_picture_in_file(_path, doc, picture):
-    paragraph = doc.add_paragraph()
-    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-    run = paragraph.add_run("")
-    run.add_picture(_path + '/' + picture, width=Pt(480))
-
-
 # Настройка полей для документа, можно добавить доп настройки: размер документа, ориентация и т.д.
 def set_margin(doc):
     sections = doc.sections
@@ -75,15 +67,6 @@ def get_floor_list(pictures_list):
     return sorted(floor_list)
 
 
-# Добавляет заголовок этажа и форматирует его
-def add_floor_title_in_file(floor, doc):
-    floor_title = doc.add_heading().add_run(f'{floor} этаж')
-    floor_title.font.name = 'Times new roman'
-    floor_title.font.size = Pt(16)
-    floor_title.font.color.rgb = RGBColor(0, 0, 0)
-    doc.add_paragraph()
-
-
 # Возвращает список картинок для конкретного этажа
 def get_list_of_floor_pictures(floor, _all_pictures):
     pictures_list = []
@@ -92,6 +75,44 @@ def get_list_of_floor_pictures(floor, _all_pictures):
         if str(floor) == pic_num:
             pictures_list.append(elem)
     return pictures_list
+
+
+# Добавление нижнего колонтитула в файл, на вход принимает документ
+def add_footer_in_doc(doc):
+    section = doc.sections[0]
+    footer = section.footer
+    footer_para = footer.paragraphs[0]
+
+    # Должен вызывать функцию для ввода информации пользователем {site_ID} {location} {full_address}
+    site_id = '25654'
+    location = 'БЦ Юникон'
+    full_address = 'Москва, Плеханова, д.4А'
+    footer_text = footer_para.add_run(f'Indoor, SiteID - {site_id}\n{location}\n{full_address}')
+    footer_text.font.name = 'Times new roman'
+    footer_text.font.size = Pt(9)
+
+
+# Добавляет верхний колонтитул
+def add_header_in_doc(doc):
+    section = doc.sections[0]
+    header = section.header
+    header_para = header.paragraphs[0]
+    header_para.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+    header_text = header_para.add_run(f'Отчет по результатам проведения\n'
+                                      f'Indoor-измерений в сети ПАО «МегаФон»')
+
+    # Нужно добавить лого слева
+    header_text.font.name = 'Times new roman'
+    header_text.font.size = Pt(11)
+
+
+# Добавляет заголовок этажа и форматирует его
+def add_floor_title_in_file(floor, doc):
+    floor_title = doc.add_heading().add_run(f'{floor} этаж')
+    floor_title.font.name = 'Times new roman'
+    floor_title.font.size = Pt(16)
+    floor_title.font.color.rgb = RGBColor(0, 0, 0)
+    doc.add_paragraph()
 
 
 # Добавляет таблицу со значениями для каждого этажа
@@ -117,6 +138,14 @@ def add_table_with_values(doc):
     table.rows[3].cells[3].text = 'UL 4G'                   # UL 2G
     doc.add_paragraph()
     adjust_table_with_values(table, rows, cols)
+
+
+# Добавляет 1 картинку файл
+def add_picture_in_file(_path, doc, picture):
+    paragraph = doc.add_paragraph()
+    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    run = paragraph.add_run("")
+    run.add_picture(_path + '/' + picture, width=Pt(480))
 
 
 # Форматирование таблицы со значениями
@@ -188,6 +217,9 @@ def main():
     all_floors = get_floor_list(all_pictures)
     # report_path = select_path()
     report_path = path
+
+    add_footer_in_doc(report_doc)
+    add_header_in_doc(report_doc)
 
     if save_report(report_doc, report_path) != 1:
         absolut_picture_number_in_file = 1

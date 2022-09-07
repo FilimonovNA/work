@@ -40,6 +40,8 @@ def set_margin(doc):
         section.bottom_margin = Cm(1)
         section.left_margin = Cm(1.5)
         section.right_margin = Cm(1)
+        section.header_distance = Cm(0.5)
+        section.footer_distance = Cm(0.5)
 
 
 # Возвращает номер этажа, на котором будет располагаться данная картинка
@@ -76,6 +78,69 @@ def get_list_of_floor_pictures(floor, _all_pictures):
             pictures_list.append(elem)
     return pictures_list
 
+# Добавляем пустую строку в файл
+def add_blank(doc, number_of_blanks):
+    for i in range(number_of_blanks):
+        doc.add_paragraph()
+# Добавляет первую страницу в отчет
+def add_first_page_in_doc(doc):
+
+    # Заголовок файла
+    report_title = doc.add_paragraph()
+    report_title.alignment  = WD_PARAGRAPH_ALIGNMENT.CENTER
+    report_title_text = report_title.add_run("Отчет \nпо результатам проведения Indoor-измерений")
+    report_title_text.font.name = 'Times new roman'
+    report_title_text.font.size = Pt(20)
+    report_title_text.bold = True
+    add_blank(doc, 4)
+
+    # Данные об измерениях
+    # Дата
+    date = '04.05.2022'
+    date_title = doc.add_paragraph().add_run(f"Дата выезда: {date}")
+    date_title.font.name = 'Times new roman'
+    date_title.font.size = Pt(14)
+    date_title.bold = True
+
+    # Имена измерителя и репортера
+    measurer = 'Филимонов Н.А.'
+    measurer_title = doc.add_paragraph().add_run(f"Измерения проводил: {measurer}")
+    measurer_title.font.name = 'Times new roman'
+    measurer_title.font.size = Pt(14)
+    measurer_title.bold = True
+    reporter = 'Филимонов Н.А.'
+    reporter_title = doc.add_paragraph().add_run(f"Отчет подготовил: {reporter}  с помощью Report Builder by Filimonov")
+    reporter_title.font.name = 'Times new roman'
+    reporter_title.font.size = Pt(14)
+    reporter_title.bold = True
+    add_blank(doc, 2)
+
+    # Данные об объекте
+    building = "БЦ 'Юникон'"
+    building_title = reporter_title = doc.add_paragraph().add_run(f"Объект: {building}")
+    building_title.font.name = 'Times new roman'
+    building_title.font.size = Pt(14)
+    building_title.bold = True
+    full_address = 'Москва, улица Плеханова, д. 4А'
+    full_address_title = doc.add_paragraph().add_run(f"Адрес Объекта: {full_address}")
+    full_address_title.font.name = 'Times new roman'
+    full_address_title.font.size = Pt(14)
+    full_address_title.bold = True
+    add_blank(doc, 1)
+
+    # Цель работы
+    doc.add_paragraph("_" * 132)
+    add_blank(doc, 1)
+    purpose_of_work = 'Выполнение объективной оценки технических возможностей сети ПАО «Мегафон» на территории ' \
+                      'объекта, после установки на нем indoor базовой станции ПАО «МегаФон» БС'
+    site_id = 25456
+    purpose_of_work_title = doc.add_paragraph().add_run(f"Цель работы: {purpose_of_work} {site_id}.")
+    purpose_of_work_title.font.name = 'Times new roman'
+    purpose_of_work_title.font.size = Pt(14)
+    purpose_of_work_title.bold = True
+
+    doc.add_page_break()
+
 
 # Добавление нижнего колонтитула в файл, на вход принимает документ
 def add_footer_in_doc(doc):
@@ -89,12 +154,13 @@ def add_footer_in_doc(doc):
     full_address = 'Москва, Плеханова, д.4А'
     footer_text = footer_para.add_run(f'Indoor, SiteID - {site_id}\n{location}\n{full_address}')
     footer_text.font.name = 'Times new roman'
-    footer_text.font.size = Pt(9)
+    footer_text.font.size = Pt(8)
 
 
 # Добавляет верхний колонтитул
 def add_header_in_doc(doc):
     section = doc.sections[0]
+    section.different_first_page_header_footer = True
     header = section.header
     header_para = header.paragraphs[0]
     header_para.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
@@ -209,19 +275,19 @@ def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_i
 # Main, в котором происходит сборка всего отчета и вызов функций
 def main():
     path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
-    report_doc = Document()
-    set_margin(report_doc)
     path_with_pictures = path + '/Pictures'
     # path_with_pictures = select_path()
+    report_doc = Document()
+    set_margin(report_doc)
     all_pictures = get_pictures_list(path_with_pictures)
     all_floors = get_floor_list(all_pictures)
     # report_path = select_path()
     report_path = path
 
-    add_footer_in_doc(report_doc)
-    add_header_in_doc(report_doc)
-
     if save_report(report_doc, report_path) != 1:
+        add_first_page_in_doc(report_doc)
+        add_footer_in_doc(report_doc)
+        add_header_in_doc(report_doc)
         absolut_picture_number_in_file = 1
         for current_floor in all_floors:
             current_floor_pictures_list = get_list_of_floor_pictures(current_floor, all_pictures)

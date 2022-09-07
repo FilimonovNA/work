@@ -1,34 +1,5 @@
-import os
-from tkinter import filedialog
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_TAB_ALIGNMENT
-
-
-# Открытие диалогового окна и выбор юзером папки
-def select_path():
-    user_path = ''
-    while user_path == '':
-        user_path = filedialog.askdirectory(title="Select a File")
-        # Возвращает строку содержащую путь к выбранной папке
-    return user_path
-
-
-# Принимает на вход название документа и путь сохраняет документ если это возможно, иначе возвращает 1
-def save_report(_doc, _path):
-    try:
-        _doc.save(_path + '/test.docx')
-    except PermissionError:
-        return 1
-
-
-# На основании полученного на вход пути возвращает список строк содержащих названия картинок в папке
-def get_pictures_list(_path):
-    all_files = os.listdir(_path)
-    list_of_pictures = []
-    for file in all_files:
-        if file[-4:] == '.jpg' or file[-4:] == '.png':
-            list_of_pictures.append(file)
-    return list_of_pictures
 
 
 # Настройка полей для документа, можно добавить доп настройки: размер документа, ориентация и т.д.
@@ -303,7 +274,4 @@ def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_i
         picture_number_in_file += 1
     doc.add_page_break()
     return picture_number_in_file
-
-
-# Main, в котором происходит сборка всего отчета и вызов функций
 

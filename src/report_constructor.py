@@ -92,40 +92,69 @@ def add_first_page_in_doc(doc):
     report_title_text.font.name = 'Times new roman'
     report_title_text.font.size = Pt(20)
     report_title_text.bold = True
-    add_blank(doc, 4)
+    add_blank(doc, 2)
+
+    # Добавление лого
+    paragraph = doc.add_paragraph()
+    paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    run = paragraph.add_run("")
+    run.add_picture("logo.png", width=Pt(100))
+    add_blank(doc, 3)
 
     # Данные об измерениях
     # Дата
     date = '04.05.2022'
-    date_title = doc.add_paragraph().add_run(f"Дата выезда: {date}")
+    p = doc.add_paragraph()
+    date_title = p.add_run("Дата выезда: ")
     date_title.font.name = 'Times new roman'
     date_title.font.size = Pt(14)
     date_title.bold = True
+    date_text = p.add_run(f"{date}")
+    date_text.font.name = 'Times new roman'
+    date_text.font.size = Pt(14)
 
     # Имена измерителя и репортера
     measurer = 'Филимонов Н.А.'
-    measurer_title = doc.add_paragraph().add_run(f"Измерения проводил: {measurer}")
+    p = doc.add_paragraph()
+    measurer_title = p.add_run(f"Измерения проводил: ")
     measurer_title.font.name = 'Times new roman'
     measurer_title.font.size = Pt(14)
     measurer_title.bold = True
+    measurer_text = p.add_run(f"{measurer}")
+    measurer_text.font.name = 'Times new roman'
+    measurer_text.font.size = Pt(14)
+
     reporter = 'Филимонов Н.А.'
-    reporter_title = doc.add_paragraph().add_run(f"Отчет подготовил: {reporter}  с помощью Report Builder by Filimonov")
+    p = doc.add_paragraph()
+    reporter_title = p.add_run(f"Отчет подготовил: ")
     reporter_title.font.name = 'Times new roman'
     reporter_title.font.size = Pt(14)
     reporter_title.bold = True
+    reporter_text = p.add_run(f"{reporter} с помощью Report Builder by Filimonov")
+    reporter_text.font.name = 'Times new roman'
+    reporter_text.font.size = Pt(14)
     add_blank(doc, 2)
 
     # Данные об объекте
     building = "БЦ 'Юникон'"
-    building_title = reporter_title = doc.add_paragraph().add_run(f"Объект: {building}")
+    p = doc.add_paragraph()
+    building_title = p.add_run(f"Объект: ")
     building_title.font.name = 'Times new roman'
     building_title.font.size = Pt(14)
     building_title.bold = True
+    building_text = p.add_run(f"{building}")
+    building_text.font.name = 'Times new roman'
+    building_text.font.size = Pt(14)
+
     full_address = 'Москва, улица Плеханова, д. 4А'
-    full_address_title = doc.add_paragraph().add_run(f"Адрес Объекта: {full_address}")
+    p = doc.add_paragraph()
+    full_address_title = p.add_run(f"Адрес Объекта: ")
     full_address_title.font.name = 'Times new roman'
     full_address_title.font.size = Pt(14)
     full_address_title.bold = True
+    full_address_text = p.add_run(f"{full_address}")
+    full_address_text.font.name = 'Times new roman'
+    full_address_text.font.size = Pt(14)
     add_blank(doc, 1)
 
     # Цель работы
@@ -134,10 +163,15 @@ def add_first_page_in_doc(doc):
     purpose_of_work = 'Выполнение объективной оценки технических возможностей сети ПАО «Мегафон» на территории ' \
                       'объекта, после установки на нем indoor базовой станции ПАО «МегаФон» БС'
     site_id = 25456
-    purpose_of_work_title = doc.add_paragraph().add_run(f"Цель работы: {purpose_of_work} {site_id}.")
+    p = doc.add_paragraph()
+    p.paragraph_format.line_spacing = Pt(21)
+    purpose_of_work_title = p.add_run("        Цель работы: ")
     purpose_of_work_title.font.name = 'Times new roman'
     purpose_of_work_title.font.size = Pt(14)
     purpose_of_work_title.bold = True
+    purpose_of_work_text = p.add_run(f"{purpose_of_work} {site_id}.")
+    purpose_of_work_text.font.name = 'Times new roman'
+    purpose_of_work_text.font.size = Pt(14)
 
     doc.add_page_break()
 

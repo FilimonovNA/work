@@ -201,9 +201,9 @@ def add_header_in_doc(doc):
     header_text = header_para.add_run(f'Отчет по результатам проведения\n'
                                       f'Indoor-измерений в сети ПАО «МегаФон»')
 
-    # Нужно добавить лого слева
     header_text.font.name = 'Times new roman'
     header_text.font.size = Pt(11)
+    header_text.italic = True
 
 
 # Добавляет заголовок этажа и форматирует его
@@ -307,32 +307,4 @@ def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_i
 
 
 # Main, в котором происходит сборка всего отчета и вызов функций
-def main():
-    path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
-    path_with_pictures = path + '/Pictures'
-    # path_with_pictures = select_path()
-    report_doc = Document()
-    set_margin(report_doc)
-    all_pictures = get_pictures_list(path_with_pictures)
-    all_floors = get_floor_list(all_pictures)
-    # report_path = select_path()
-    report_path = path
 
-    if save_report(report_doc, report_path) != 1:
-        add_first_page_in_doc(report_doc)
-        add_footer_in_doc(report_doc)
-        add_header_in_doc(report_doc)
-        absolut_picture_number_in_file = 1
-        for current_floor in all_floors:
-            current_floor_pictures_list = get_list_of_floor_pictures(current_floor, all_pictures)
-            absolut_picture_number_in_file = add_floor_in_report(path_with_pictures, report_doc, current_floor,
-                                                                 current_floor_pictures_list,
-                                                                 absolut_picture_number_in_file)
-        save_report(report_doc, report_path)
-        print("SUCCESS")
-    else:
-        print("CLOSE FILE")
-
-
-# Точка входа в программу
-main()

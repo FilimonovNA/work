@@ -1,6 +1,5 @@
 import os
 from tkinter import filedialog
-from docx import Document
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_TAB_ALIGNMENT
 

@@ -1,4 +1,5 @@
 from report_constructor import *
+from docx import Document
 
 def main():
     # path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time

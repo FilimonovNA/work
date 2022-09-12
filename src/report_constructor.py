@@ -1,3 +1,4 @@
+from get_external_info import get_data
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_TAB_ALIGNMENT
 
@@ -176,6 +177,20 @@ def add_header_in_doc(doc):
     header_text.italic = True
 
 
+# Подготавливает дату для таблицы этажа
+def get_data_for_one_floor(_path, floor):
+    data = get_data(_path)
+    i = 0
+    data_for_one_floor = []
+    for data[i] in data:
+
+        # Костыль т.к. если этаж будет написан fl10 - Не сработает
+        if data[i].find(str(floor) + 'fl') != -1:
+            for j in range(0,4):
+                data_for_one_floor.append(data[i+j])
+        i += 1
+    return data_for_one_floor
+
 # Добавляет заголовок этажа и форматирует его
 def add_floor_title_in_file(floor, doc):
     floor_title = doc.add_heading().add_run(f'{floor} этаж')
@@ -187,7 +202,7 @@ def add_floor_title_in_file(floor, doc):
 
 # Добавляет таблицу со значениями для каждого этажа
 # Необходима доработка для вычисляемых значений из немо(чтение из файла)
-def add_table_with_values(doc):
+def add_table_with_values(doc, data):
     rows = 4
     cols = 4
     table = doc.add_table(rows=rows, cols=cols)
@@ -197,15 +212,39 @@ def add_table_with_values(doc):
     table.rows[1].cells[0].text = 'Средний уровень сигнала, дБм'
     table.rows[2].cells[0].text = 'Cредняя скорость DL, Мб/c'
     table.rows[3].cells[0].text = 'Cредняя скорость UL, Мб/c'
-    table.rows[1].cells[1].text = 'Rx Level'                # Rx level
-    table.rows[2].cells[1].text = '-'                       # DL 2G
-    table.rows[3].cells[1].text = '-'                       # UL 2G
-    table.rows[1].cells[2].text = 'RSCP'                    # RSCP
-    table.rows[2].cells[2].text = 'DL 3G'                   # DL 3G
-    table.rows[3].cells[2].text = 'UL 3G'                   # UL 3G
-    table.rows[1].cells[3].text = 'RSRP'                    # RSRP
-    table.rows[2].cells[3].text = 'DL 4G'                   # DL 2G
-    table.rows[3].cells[3].text = 'UL 4G'                   # UL 2G
+    table.rows[1].cells[1].text = '-'  # Rx level
+    table.rows[2].cells[1].text = '-'  # DL 2G
+    table.rows[3].cells[1].text = '-'  # UL 2G
+    table.rows[1].cells[2].text = 'RSCP'  # RSCP
+    table.rows[2].cells[2].text = 'DL 3G'  # DL 3G
+    table.rows[3].cells[2].text = 'UL 3G'  # UL 3G
+    table.rows[1].cells[3].text = 'RSRP'  # RSRP
+    table.rows[2].cells[3].text = 'DL 4G'  # DL 2G
+    table.rows[3].cells[3].text = 'UL 4G'  # UL 2G
+
+    for i in range(len(data)-3):
+
+        if data[i][-2:] == ':7':
+            table.rows[1].cells[1].text = data[i+1]             # Rx level
+            if data[i+2] != '-1.0':
+                table.rows[2].cells[1].text = data[i+2]         # DL 2G
+            if data[i+3] != '-1.0':
+                table.rows[3].cells[1].text = data[i+3]         # UL 2G
+
+        if  data[i][-2:] == ':1':
+            table.rows[1].cells[2].text = data[i+1]             # RSCP
+            if data[i + 2] != '-1.0':
+                table.rows[2].cells[2].text = data[i + 2]       # DL 3G
+            if data[i + 3] != '-1.0':
+                table.rows[3].cells[2].text = data[i + 3]       # UL 3G
+
+        if data[i][-2:] == ':3':
+            table.rows[1].cells[3].text = data[i + 1]           # RSRP
+            if data[i + 2] != '-1.0':
+                table.rows[2].cells[3].text = data[i + 2]       # DL 4G
+            if data[i + 3] != '-1.0':
+                table.rows[3].cells[3].text = data[i + 3]       # UL 4G
+
     doc.add_paragraph()
     adjust_table_with_values(table, rows, cols)
 
@@ -215,7 +254,7 @@ def add_picture_in_file(_path, doc, picture):
     paragraph = doc.add_paragraph()
     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     run = paragraph.add_run("")
-    run.add_picture(_path + '/' + picture, width=Pt(480))
+    run.add_picture(_path + '/' + picture, width=Pt(460))
 
 
 # Форматирование таблицы со значениями
@@ -262,7 +301,8 @@ def add_scanner_title(doc):
 # Полная "Сборка" 1 этажа для отчета
 def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_in_file):
     add_floor_title_in_file(floor, doc)
-    add_table_with_values(doc)
+    data = get_data_for_one_floor(_path, floor)
+    add_table_with_values(doc, data)
     is_scanner_title_was_add = 0
     for picture in floor_pictures_list:
         script_number = get_script_number_of_picture(picture)
@@ -274,4 +314,3 @@ def add_floor_in_report(_path, doc, floor, floor_pictures_list, picture_number_i
         picture_number_in_file += 1
     doc.add_page_break()
     return picture_number_in_file
-

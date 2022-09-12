@@ -200,8 +200,7 @@ def add_floor_title_in_file(floor, doc):
     doc.add_paragraph()
 
 
-# Добавляет таблицу со значениями для каждого этажа
-# Необходима доработка для вычисляемых значений из немо(чтение из файла)
+# Добавляет таблицу для заполнения значениями
 def add_table_with_values(doc, data):
     rows = 4
     cols = 4
@@ -221,6 +220,14 @@ def add_table_with_values(doc, data):
     table.rows[1].cells[3].text = 'RSRP'  # RSRP
     table.rows[2].cells[3].text = 'DL 4G'  # DL 2G
     table.rows[3].cells[3].text = 'UL 4G'  # UL 2G
+
+    doc.add_paragraph()
+    entering_data_into_a_table(table, data)
+    adjust_table_with_values(table, rows, cols)
+
+
+# Наполнение таблицы данными из файла
+def entering_data_into_a_table(table, data):
 
     for i in range(len(data)-3):
 
@@ -244,9 +251,6 @@ def add_table_with_values(doc, data):
                 table.rows[2].cells[3].text = data[i + 2]       # DL 4G
             if data[i + 3] != '-1.0':
                 table.rows[3].cells[3].text = data[i + 3]       # UL 4G
-
-    doc.add_paragraph()
-    adjust_table_with_values(table, rows, cols)
 
 
 # Добавляет 1 картинку файл

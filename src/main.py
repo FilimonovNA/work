@@ -3,7 +3,7 @@ from get_external_info import *
 from docx import Document
 
 
-def main(path_with_pictures, report_path):
+def generate_file(path_with_pictures, report_path):
 
     # path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
     # path_with_pictures = path + '/Pictures'

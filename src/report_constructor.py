@@ -49,16 +49,19 @@ def get_list_of_floor_pictures(floor, _all_pictures):
             pictures_list.append(elem)
     return pictures_list
 
+
 # Добавляем пустую строку в файл
 def add_blank(doc, number_of_blanks):
-    for i in range(number_of_blanks):
+    for _ in range(number_of_blanks):
         doc.add_paragraph()
+
+
 # Добавляет первую страницу в отчет
 def add_first_page_in_doc(doc):
 
     # Заголовок файла
     report_title = doc.add_paragraph()
-    report_title.alignment  = WD_PARAGRAPH_ALIGNMENT.CENTER
+    report_title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     report_title_text = report_title.add_run("Отчет \nпо результатам проведения Indoor-измерений")
     report_title_text.font.name = 'Times new roman'
     report_title_text.font.size = Pt(20)
@@ -87,7 +90,7 @@ def add_first_page_in_doc(doc):
     # Имена измерителя и репортера
     measurer = 'Филимонов Н.А.'
     p = doc.add_paragraph()
-    measurer_title = p.add_run(f"Измерения проводил: ")
+    measurer_title = p.add_run("Измерения проводил: ")
     measurer_title.font.name = 'Times new roman'
     measurer_title.font.size = Pt(14)
     measurer_title.bold = True
@@ -97,7 +100,7 @@ def add_first_page_in_doc(doc):
 
     reporter = 'Филимонов Н.А.'
     p = doc.add_paragraph()
-    reporter_title = p.add_run(f"Отчет подготовил: ")
+    reporter_title = p.add_run("Отчет подготовил: ")
     reporter_title.font.name = 'Times new roman'
     reporter_title.font.size = Pt(14)
     reporter_title.bold = True
@@ -109,7 +112,7 @@ def add_first_page_in_doc(doc):
     # Данные об объекте
     building = "БЦ 'Юникон'"
     p = doc.add_paragraph()
-    building_title = p.add_run(f"Объект: ")
+    building_title = p.add_run("Объект: ")
     building_title.font.name = 'Times new roman'
     building_title.font.size = Pt(14)
     building_title.bold = True
@@ -119,7 +122,7 @@ def add_first_page_in_doc(doc):
 
     full_address = 'Москва, улица Плеханова, д. 4А'
     p = doc.add_paragraph()
-    full_address_title = p.add_run(f"Адрес Объекта: ")
+    full_address_title = p.add_run("Адрес Объекта: ")
     full_address_title.font.name = 'Times new roman'
     full_address_title.font.size = Pt(14)
     full_address_title.bold = True
@@ -131,8 +134,9 @@ def add_first_page_in_doc(doc):
     # Цель работы
     doc.add_paragraph("_" * 132)
     add_blank(doc, 1)
-    purpose_of_work = 'Выполнение объективной оценки технических возможностей сети ПАО «Мегафон» на территории ' \
-                      'объекта, после установки на нем indoor базовой станции ПАО «МегаФон» БС'
+    purpose_of_work = 'Выполнение объективной оценки технических возможностей сети ПАО «Мегафон» ' \
+                      'на территории объекта, после установки на нем indoor базовой станции ' \
+                      'ПАО «МегаФон» БС'
     site_id = 25456
     p = doc.add_paragraph()
     p.paragraph_format.line_spacing = Pt(21)
@@ -169,7 +173,7 @@ def add_header_in_doc(doc):
     header = section.header
     header_para = header.paragraphs[0]
     header_para.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-    header_text = header_para.add_run(f'Отчет по результатам проведения\n'
+    header_text = header_para.add_run('Отчет по результатам проведения\n'
                                       f'Indoor-измерений в сети ПАО «МегаФон»')
 
     header_text.font.name = 'Times new roman'
@@ -186,10 +190,11 @@ def get_data_for_one_floor(_path, floor):
 
         # Костыль т.к. если этаж будет написан fl10 - Не сработает
         if data[i].find(str(floor) + 'fl') != -1:
-            for j in range(0,4):
+            for j in range(0, 4):
                 data_for_one_floor.append(data[i+j])
         i += 1
     return data_for_one_floor
+
 
 # Добавляет заголовок этажа и форматирует его
 def add_floor_title_in_file(floor, doc):
@@ -238,7 +243,7 @@ def entering_data_into_a_table(table, data):
             if data[i+3] != '-1.0':
                 table.rows[3].cells[1].text = data[i+3]         # UL 2G
 
-        if  data[i][-2:] == ':1':
+        if data[i][-2:] == ':1':
             table.rows[1].cells[2].text = data[i+1]             # RSCP
             if data[i + 2] != '-1.0':
                 table.rows[2].cells[2].text = data[i + 2]       # DL 3G

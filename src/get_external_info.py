@@ -11,7 +11,7 @@ def select_path():
     return user_path
 
 
-# Принимает на вход название документа и путь сохраняет документ если это возможно, иначе возвращает 1
+# Принимает название документа и путь сохраняет документ если это возможно, иначе возвращает 1
 def save_report(_doc, _path):
     try:
         _doc.save(_path + '/test.docx')
@@ -32,6 +32,6 @@ def get_pictures_list(_path):
 # Получаем данные для таблиц перед этажами
 def get_data(_path):
     with open(_path+'/data.txt') as data_file:
-        data = data_file.read().splitlines();
+        data = data_file.read().splitlines()
     data_file.close()
     return data

@@ -3,16 +3,16 @@ from get_external_info import *
 from docx import Document
 
 
-def main():
+def main(path_with_pictures, report_path):
 
     # path = 'C:/Users/PC/Desktop/Work/'  # legacy for save time
     # path_with_pictures = path + '/Pictures'
-    path_with_pictures = select_path()
+    # path_with_pictures = select_path()
     report_doc = Document()
     set_margin(report_doc)
     all_pictures = get_pictures_list(path_with_pictures)
     all_floors = get_floor_list(all_pictures)
-    report_path = select_path()
+    # report_path = select_path()
 
     # report_path = path
 
@@ -30,6 +30,3 @@ def main():
         print("SUCCESS")
     else:
         print("CLOSE FILE")
-
-
-main()

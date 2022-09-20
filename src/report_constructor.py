@@ -17,9 +17,10 @@ def set_margin(doc):
 
 # Возвращает номер этажа, на котором будет располагаться данная картинка
 def get_picture_number_of_floor(picture):
-    if picture[1].isdigit():
+    floor_num = None
+    if picture[1].isdigit() and picture.find('fl') != -1:
         floor_num = picture[:2]
-    else:
+    elif picture[0].isdigit() and picture.find('fl') != -1:
         floor_num = picture[0]
     return floor_num
 
@@ -35,7 +36,7 @@ def get_floor_list(pictures_list):
     floor_list = []
     for elem in pictures_list:
         floor_num = get_picture_number_of_floor(elem)
-        if floor_num not in floor_list:
+        if floor_num not in floor_list and floor_num is not None:
             floor_list.append(floor_num)
     return sorted(floor_list)
 
@@ -186,6 +187,8 @@ def get_data_for_one_floor(_path, floor):
     data = get_data(_path)
     i = 0
     data_for_one_floor = []
+    if data == -1:
+        return data_for_one_floor
     for data[i] in data:
 
         # Костыль т.к. если этаж будет написан fl10 - Не сработает

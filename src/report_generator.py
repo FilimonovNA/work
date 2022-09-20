@@ -31,7 +31,7 @@ def generate():
 def config():
     print(window.title)
 
-success= ""
+
 label_select_path_with_pictures = Label(window, text="Select path with pictures", font=13)
 label_select_path_with_pictures.place(x=10, y=10, width=200, height=20)
 

@@ -19,7 +19,6 @@ def generate_file(path_with_pictures, report_path):
     # report_path = select_path()
 
     # report_path = path
-
     if save_report(report_doc, report_path) != 1:
         add_footer_in_doc(report_doc)
         add_header_in_doc(report_doc)
@@ -33,4 +32,5 @@ def generate_file(path_with_pictures, report_path):
         save_report(report_doc, report_path)
         return "SUCCESS"
     else:
+        remove_report(report_doc, report_path)
         return "CLOSE FILE"

@@ -14,10 +14,16 @@ def select_path():
 # Принимает название документа и путь сохраняет документ если это возможно, иначе возвращает 1
 def save_report(_doc, _path):
     try:
-        _doc.save(_path + '/test.docx')
+        _doc.save(_path + '/report.docx')
     except PermissionError:
         return 1
 
+
+def remove_report(_doc, _path):
+    try:
+        _doc.delete(_path + '/report.docx')
+    except PermissionError:
+        return 1
 
 # На основании полученного на вход пути возвращает список строк содержащих названия картинок в папке
 def get_pictures_list(_path):
@@ -31,7 +37,11 @@ def get_pictures_list(_path):
 
 # Получаем данные для таблиц перед этажами
 def get_data(_path):
-    with open(_path+'/data.txt') as data_file:
-        data = data_file.read().splitlines()
-    data_file.close()
-    return data
+    filename = _path+'/data.txt'
+    if os.path.isfile(filename):
+        with open(filename) as data_file:
+            data = data_file.read().splitlines()
+        data_file.close()
+        return data
+    else:
+        return -1

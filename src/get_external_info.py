@@ -32,7 +32,7 @@ def get_pictures_list(_path):
     all_files = os.listdir(_path)
     list_of_pictures = []
     for file in all_files:
-        if file[-4:] == '.jpg' or file[-4:] == '.png':
+        if file.endswith('.jpg') or file.endswith('.png'):
             list_of_pictures.append(file)
     return list_of_pictures
 
@@ -41,9 +41,8 @@ def get_pictures_list(_path):
 def get_data(_path):
     filename = _path+'/data.txt'
     if os.path.isfile(filename):
-        with open(filename) as data_file:
+        with open(filename) as data_file:   # закрывает автоматически
             data = data_file.read().splitlines()
-        data_file.close()
         return data
     else:
         return -1

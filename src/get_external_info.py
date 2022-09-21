@@ -19,11 +19,13 @@ def save_report(_doc, _path):
         return 1
 
 
+# Удаление документа
 def remove_report(_doc, _path):
     try:
         _doc.delete(_path + '/report.docx')
     except PermissionError:
         return 1
+
 
 # На основании полученного на вход пути возвращает список строк содержащих названия картинок в папке
 def get_pictures_list(_path):

@@ -3,11 +3,12 @@
 import requests
 import json
 import pandas as pd
+import datetime
 
 MAX_PAGE_NUMBER = 100
 MINKL_ID = 102398584
 FILE_NAME = "data.json"
-MAX_PAGE = 60
+MAX_PAGE = 60           # Default the maximum number of pages is 60
 
 def get_user_request():
     request = input("Enter user request: ")
@@ -35,7 +36,7 @@ def get_full_data(user_request, page_number):
     for page in range(page_number, MAX_PAGE):
         data = get_data_from_one_page(user_request=user_request, page_number=page)
         all_data.extend(data)
-        print("#"*page+"|"*(MAX_PAGE-page))
+        print("#"*page + " "*(MAX_PAGE-page-1) + ' ' + str(int(page*100/(MAX_PAGE-1))) + '%')
     #json.dump(all_data, data_file, indent=4, ensure_ascii=False)
     #data_file.close()
     return all_data
@@ -63,14 +64,16 @@ def get_data_from_json_request(json_data):
     return data_list
 
 
-def get_current_rating_number(data):
+def get_current_rating_number(data, brand_data):
     counter = 0
     for one_data in data:
         counter += 1
-        print(f'{counter}  =  {one_data["id"]}')
+        # print(f'{counter}  =  {one_data["id"]}')
         if one_data["id"] == MINKL_ID:
-            return counter
-    return -1
+            brand_data = one_data
+            brand_data["place"] = counter
+            return brand_data
+    return None
 
 
 def save_excel(data, filename='result'):
@@ -87,8 +90,26 @@ page_number: int = 1
 
 clear_file()
 
-#data = get_full_data(user_request, page_number)
+
 data = get_full_data(user_request=user_request, page_number=page_number)
-save_excel(data)
-place = get_current_rating_number(data)
-print(f'In request: "{user_request}" MINKL on {place} place, page {int(place/100) + 1}')
+# save_excel(data)
+minkl_data = None
+minkl_data = get_current_rating_number(data, minkl_data)
+
+if minkl_data is not None:
+    log_string = f'Request: {user_request.replace("+", " ")}\n' \
+                 f'Rating: {minkl_data["rating"]}\n' \
+                 f'Place: {minkl_data["place"]}\n' \
+                 f'Page: {int(minkl_data["place"]/100)+1}\n' \
+                 f'Feedbacks: {minkl_data["feedbacks"]}\n' \
+                 f'_______________________________________\n\n'
+else:
+    log_string = f'Does not find minkl in this request: {user_request.replace("+", " ")}\n' \
+                 f'_______________________________________\n\n'
+
+
+log_file = open('log.txt', 'a', encoding='cp1251')
+log_file.write(str(datetime.datetime.now()) + '\n')
+log_file.write("Всего страниц: " + str(MAX_PAGE) + '\n')
+log_file.write(log_string)
+log_file.close()
